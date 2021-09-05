@@ -1,4 +1,4 @@
-package pkg
+package module
 
 import "rsc.io/quote/v3"
 

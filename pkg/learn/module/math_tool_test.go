@@ -1,7 +1,6 @@
-// Package moqi_tool_go
 // @author moqi
 // On 2021/9/5 12:02:08
-package pkg
+package module
 
 import (
 	"testing"

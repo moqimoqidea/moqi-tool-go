@@ -1,4 +1,4 @@
-package moqi_tool_go
+package pkg
 
 import "rsc.io/quote/v3"
 

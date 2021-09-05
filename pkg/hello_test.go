@@ -1,6 +1,8 @@
-package moqi_tool_go
+package pkg
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestHello(t *testing.T) {
 	want := "Hello, world."

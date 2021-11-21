@@ -3,6 +3,7 @@ module github.com/moqimoqidea/moqi-tool-go
 go 1.17
 
 require (
+	github.com/elastic/go-elasticsearch/v8 v8.0.0-20211119105052-89fd23742b94
 	github.com/gin-gonic/gin v1.7.4
 	github.com/pkg/errors v0.9.1
 	robpike.io/filter v0.0.0-20210831053821-dcb4225e6ac8

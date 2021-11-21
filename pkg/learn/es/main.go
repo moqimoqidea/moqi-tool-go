@@ -10,8 +10,6 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"math/rand"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -65,17 +63,16 @@ func main() {
 			defer wg.Done()
 
 			// Build the request body.
-			var b strings.Builder
+			//var b strings.Builder
 			//b.WriteString(`{"title" : "`)
 			//b.WriteString(title)
 			//b.WriteString(`"}`)
-			b.WriteString(`{"name": "tom", "age": 24, "address": "beijing"}`)
+			//b.WriteString(`{"name": "tom", "age": 24, "address": "beijing"}`)
 
 			// Set up the request object.
 			req := esapi.IndexRequest{
 				Index:      "test",
-				DocumentID: strconv.Itoa(rand.Intn(100000)),
-				Body:       strings.NewReader(b.String()),
+				Body:       strings.NewReader("{\"name\": \"tom\", \"age\": 27, \"address\": \"beijing\"}"),
 				Refresh:    "true",
 			}
 

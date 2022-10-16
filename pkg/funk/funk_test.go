@@ -1,7 +1,8 @@
 // Package funk
 // @author moqi
 // On 2022/10/16 11:32:32
-// from: https://liuqh.icu/2021/12/25/go/package/32-go-funk/
+// see: https://github.com/thoas/go-funk
+// see: https://liuqh.icu/2021/12/25/go/package/32-go-funk/
 package funk
 
 import (
@@ -25,6 +26,17 @@ type User struct {
 	Home struct {
 		City string
 	}
+}
+
+type Foo struct {
+	ID        int
+	FirstName string `tag_name:"tag 1"`
+	LastName  string `tag_name:"tag 2"`
+	Age       int    `tag_name:"tag 3"`
+}
+
+func (f Foo) TableName() string {
+	return "foo"
 }
 
 func TestExist(t *testing.T) {
@@ -839,4 +851,173 @@ func TestShortIf(t *testing.T) {
 'a' == 'b' :  unequal chars
 --- PASS: TestShortIf (0.00s)
 PASS
+*/
+
+func TestIntersect(t *testing.T) {
+	f := Foo{
+		ID:        1,
+		FirstName: "Gilles",
+		LastName:  "Fabio",
+		Age:       70,
+	}
+
+	b := Foo{
+		ID:        2,
+		FirstName: "Florent",
+		LastName:  "Messa",
+		Age:       80,
+	}
+
+	b2 := Foo{
+		ID:        2,
+		FirstName: "Florent",
+		LastName:  "Messa",
+		Age:       80,
+	}
+
+	fmt.Println("object set:", funk.ToSet([]Foo{f, b, b2}))
+	fmt.Println("int set:", funk.ToSet([4]int{1, 1, 2, 2}))
+}
+
+/**输出
+=== RUN   TestIntersect
+object set: map[{1 Gilles Fabio 70}:{} {2 Florent Messa 80}:{}]
+int set: map[1:{} 2:{}]
+--- PASS: TestIntersect (0.00s)
+PASS
+*/
+
+func TestFilter(t *testing.T) {
+	result := funk.Filter([]int{1, 2, 3, 4}, func(x int) bool {
+		return x%2 == 0
+	})
+	fmt.Println("偶数:", result)
+}
+
+/**
+=== RUN   TestFilter
+偶数: [2 4]
+--- PASS: TestFilter (0.00s)
+PASS
+*/
+
+func TestReduce(t *testing.T) {
+	// Using operation runes. '+' and '*' only supported.
+	r1 := funk.Reduce([]int{1, 2, 3, 4}, '+', float64(0)) // 10
+	r2 := funk.Reduce([]int{1, 2, 3, 4}, '*', 1)          // 24
+
+	// Using accumulator function
+	r3 := funk.Reduce([]int{1, 2, 3, 4}, func(acc float64, num int) float64 {
+		return acc + float64(num)
+	}, float64(0)) // 10
+
+	r4 := funk.Reduce([]int{1, 2, 3, 4}, func(acc string, num int) string {
+		return acc + fmt.Sprint(num)
+	}, "") // "1234"
+
+	fmt.Println("plus result: ", r1)
+	fmt.Println("multiply result: ", r2)
+	fmt.Println("plus result: ", r3)
+	fmt.Println("string concat result: ", r4)
+}
+
+/**
+=== RUN   TestReduce
+plus result:  10
+multiply result:  24
+plus result:  10
+string concat result:  1234
+--- PASS: TestReduce (0.00s)
+PASS
+*/
+
+func TestFind(t *testing.T) {
+	result := funk.Find([]int{1, 2, 3, 4}, func(x int) bool {
+		return x%2 == 0
+	})
+	fmt.Println("第一个偶数:", result)
+}
+
+/**
+=== RUN   TestFind
+第一个偶数: 2
+--- PASS: TestFind (0.00s)
+PASS
+*/
+
+func TestMapAllInOne(t *testing.T) {
+	r1 := funk.Map([]int{1, 2, 3, 4}, func(x int) int {
+		return x * 2
+	}) // []int{2, 4, 6, 8}
+	fmt.Println("slice -> slice: ", r1)
+
+	r2 := funk.Map([]int{1, 2, 3, 4}, func(x int) string {
+		return "Hello"
+	}) // []string{"Hello", "Hello", "Hello", "Hello"}
+	fmt.Println("slice -> slice: ", r2)
+
+	r3 := funk.Map([]int{1, 2, 3, 4}, func(x int) (int, int) {
+		return x, x
+	}) // map[int]int{1: 1, 2: 2, 3: 3, 4: 4}
+	fmt.Println("slice -> map: ", r3)
+
+	mapping := map[int]string{
+		1: "Florent",
+		2: "Gilles",
+	}
+
+	r4 := funk.Map(mapping, func(k int, v string) int {
+		return k
+	}) // []int{1, 2}
+	fmt.Println("map -> slice: ", r4)
+
+	r5 := funk.Map(mapping, func(k int, v string) (string, string) {
+		return fmt.Sprintf("%d", k), v
+	}) // map[string]string{"1": "Florent", "2": "Gilles"}
+	fmt.Println("map -> map: ", r5)
+}
+
+/**
+=== RUN   TestMapAllInOne
+slice -> slice:  [2 4 6 8]
+slice -> slice:  [Hello Hello Hello Hello]
+slice -> map:  map[1:1 2:2 3:3 4:4]
+map -> slice:  [1 2]
+map -> map:  map[1:Florent 2:Gilles]
+--- PASS: TestMapAllInOne (0.00s)
+PASS
+*/
+
+func TestFlatMap2(t *testing.T) {
+	r1 := funk.FlatMap([][]int{{1, 2}, {3, 4}}, func(x []int) []int {
+		return append(x, 0)
+	}) // []int{1, 2, 0, 3, 4, 0}
+	fmt.Println("map -> slice: ", r1)
+
+	mapping := map[string][]int{
+		"Florent": {1, 2},
+		"Gilles":  {3, 4},
+	}
+
+	r2 := funk.FlatMap(mapping, func(k string, v []int) []int {
+		return v
+	}) // []int{1, 2, 3, 4}
+	fmt.Println("map -> slice: ", r2)
+}
+
+func TestGetOrElse(t *testing.T) {
+	str := "hello world"
+	fmt.Println(funk.GetOrElse(&str, "foobar")) // string{"hello world"}
+	fmt.Println(funk.GetOrElse(str, "foobar"))  // string{"hello world"}
+	fmt.Println(funk.GetOrElse(nil, "foobar"))  // string{"foobar"}
+}
+
+/**
+=== RUN   TestGetOrElse
+hello world
+hello world
+foobar
+--- PASS: TestGetOrElse (0.00s)
+PASS
+
 */

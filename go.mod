@@ -1,6 +1,6 @@
 module github.com/moqimoqidea/moqi-tool-go
 
-go 1.17
+go 1.19
 
 require (
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20211119105052-89fd23742b94

@@ -71,9 +71,9 @@ func main() {
 
 			// Set up the request object.
 			req := esapi.IndexRequest{
-				Index:      "test",
-				Body:       strings.NewReader("{\"name\": \"tom\", \"age\": 27, \"address\": \"beijing\"}"),
-				Refresh:    "true",
+				Index:   "test",
+				Body:    strings.NewReader("{\"name\": \"tom\", \"age\": 27, \"address\": \"beijing\"}"),
+				Refresh: "true",
 			}
 
 			// Perform the request with the client.

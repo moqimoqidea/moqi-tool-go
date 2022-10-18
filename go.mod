@@ -6,11 +6,13 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20211119105052-89fd23742b94
 	github.com/gin-gonic/gin v1.7.4
 	github.com/pkg/errors v0.9.1
+	github.com/thoas/go-funk v0.9.2
 	robpike.io/filter v0.0.0-20210831053821-dcb4225e6ac8
 	rsc.io/quote/v3 v3.1.0
 )
 
 require (
+	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
@@ -21,7 +23,6 @@ require (
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
-	github.com/thoas/go-funk v0.9.2 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
 	golang.org/x/sys v0.0.0-20200116001909-b77594299b42 // indirect

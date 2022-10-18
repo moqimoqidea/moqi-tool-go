@@ -2,7 +2,7 @@
 // @author moqi
 // On 2022/10/18 18:55:30
 // see: https://github.com/tidwall/sjson
-package gjson
+package sjson
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ const (
 	simpleJson = `{"name":{"first":"Janet","last":"Prichard"},"age":47}`
 )
 
-func TestGjson1(t *testing.T) {
+func TestSjson1(t *testing.T) {
 	value, _ := sjson.Set(simpleJson, "name.last", "Anderson")
 	fmt.Println("value -> ", value)
 }

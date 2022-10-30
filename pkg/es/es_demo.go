@@ -1,7 +1,6 @@
 // es client demo
 // @author moqi
 // On 2021/11/21 10:49:51
-// $ go run _examples/zap_test.go
 
 package main
 

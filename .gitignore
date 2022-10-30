@@ -1,3 +1,6 @@
 .idea
 *.DS_Store
 *.iml
+
+# zap log files
+pkg/zap/*.log

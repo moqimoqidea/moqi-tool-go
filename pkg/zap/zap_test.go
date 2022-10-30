@@ -12,7 +12,9 @@ const url = "https://www.uber.com"
 
 func TestSugaredLogger(t *testing.T) {
 	logger, _ := zap.NewProduction()
-	defer logger.Sync() // flushes buffer, if any
+	defer func(logger *zap.Logger) {
+		_ = logger.Sync()
+	}(logger) // flushes buffer, if any
 
 	sugar := logger.Sugar()
 	sugar.Infow("failed to fetch URL",
@@ -26,7 +28,9 @@ func TestSugaredLogger(t *testing.T) {
 
 func TestZapLogger(t *testing.T) {
 	logger, _ := zap.NewProduction()
-	defer logger.Sync()
+	defer func(logger *zap.Logger) {
+		_ = logger.Sync()
+	}(logger)
 	logger.Info("failed to fetch URL",
 		// Structured context as strongly typed Field values.
 		zap.String("url", url),

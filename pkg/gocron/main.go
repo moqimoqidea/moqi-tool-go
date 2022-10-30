@@ -11,7 +11,8 @@ import (
 )
 
 func hello(name string) {
-	message := fmt.Sprintf("Hi, %v", name)
+	now := time.Now().Format("20060102 15:04:05")
+	message := fmt.Sprintf("On %s, hi, %v.", now, name)
 	fmt.Println(message)
 }
 

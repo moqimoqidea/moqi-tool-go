@@ -16,11 +16,9 @@ func hello(name string) {
 }
 
 func runCronJobs() {
-	// 3
 	s := gocron.NewScheduler(time.UTC)
 
-	// 4
-	_, err := s.Every(1).Seconds().Do(func() {
+	_, err := s.Every(10).Seconds().Do(func() {
 		hello("moqi")
 	})
 
@@ -28,11 +26,9 @@ func runCronJobs() {
 		return
 	}
 
-	// 5
 	s.StartBlocking()
 }
 
-// 6
 func main() {
 	runCronJobs()
 	fmt.Println("start gocron")

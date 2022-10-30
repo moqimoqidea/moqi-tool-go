@@ -4,9 +4,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -129,4 +131,48 @@ func Test2File(t *testing.T) {
 	}(logger)
 	// 记录日志
 	logger.Info("输出日志到文件", zap.String("name", "张三"))
+}
+
+// 同时输入到文件和控制台
+func TestPrintFileAndStd(t *testing.T) {
+	// 指定写入文件
+	fileHandle, _ := os.Create("./test.log")
+	// 同时写入文件和控制台 (只修改这一行)
+	writeFile := zapcore.NewMultiWriteSyncer(fileHandle, os.Stdout)
+	// 设置日志输出格式为JSON (参数复用NewDevelopmentEncoderConfig)
+	encoder := zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig())
+	// 返回zapcore.Core
+	zcore := zapcore.NewCore(encoder, zapcore.Lock(writeFile), zap.DebugLevel)
+	// 创建日志记录器
+	logger := zap.New(zcore)
+	defer func(logger *zap.Logger) {
+		_ = logger.Sync()
+	}(logger)
+	// 记录日志
+	logger.Info("输出日志到文件", zap.String("name", "张三"))
+}
+
+// 获取文件切割和归档配置信息
+func getLumberjackConfig() zapcore.WriteSyncer {
+	lumberjackLogger := &lumberjack.Logger{
+		Filename:   "./zap.log", //日志文件
+		MaxSize:    1,           //单文件最大容量(单位MB)
+		MaxBackups: 3,           //保留旧文件的最大数量
+		MaxAge:     1,           // 旧文件最多保存几天
+		Compress:   false,       // 是否压缩/归档旧文件
+	}
+	return zapcore.AddSync(lumberjackLogger)
+}
+
+// 测试日志切割和归档
+func TestCutAndArchive(t *testing.T) {
+	// 设置日志输出格式为JSON (参数复用NewDevelopmentEncoderConfig)
+	encoder := zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig())
+	core := zapcore.NewCore(encoder, getLumberjackConfig(), zap.DebugLevel)
+	sugarLogger := zap.New(core).Sugar()
+	defer func(sugarLogger *zap.SugaredLogger) {
+		_ = sugarLogger.Sync()
+	}(sugarLogger)
+	// 记录日志
+	sugarLogger.Infof("日志内容:%s", strings.Repeat("日志", 90000))
 }

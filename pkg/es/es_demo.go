@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"log"
 	"strings"
 	"sync"
@@ -39,7 +40,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error getting response: %s", err)
 	}
-	defer res.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(res.Body)
 	// Check response status
 	if res.IsError() {
 		log.Fatalf("Error: %s", res.String())
@@ -80,7 +83,9 @@ func main() {
 			if err != nil {
 				log.Fatalf("Error getting response: %s", err)
 			}
-			defer res.Body.Close()
+			defer func(Body io.ReadCloser) {
+				_ = Body.Close()
+			}(res.Body)
 
 			if res.IsError() {
 				log.Printf("[%s] Error indexing document ID=%d", res.Status(), i+1)
@@ -126,7 +131,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error getting response: %s", err)
 	}
-	defer res.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(res.Body)
 
 	if res.IsError() {
 		var e map[string]interface{}

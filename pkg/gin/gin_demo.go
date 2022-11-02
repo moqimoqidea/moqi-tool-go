@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io"
 	"log"
@@ -71,7 +72,26 @@ func main() {
 	// 如果需要同时将日志写入文件和控制台，请使用以下代码。
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
-	r := gin.Default()
+	r := gin.New()
+
+	// 自定义日志文件
+	// LoggerWithFormatter 中间件会写入日志到 gin.DefaultWriter
+	// 默认 gin.DefaultWriter = os.Stdout
+	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+		// 你的自定义格式
+		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
+			param.ClientIP,
+			param.TimeStamp.Format(time.RFC1123),
+			param.Method,
+			param.Path,
+			param.Request.Proto,
+			param.StatusCode,
+			param.Latency,
+			param.Request.UserAgent(),
+			param.ErrorMessage,
+		)
+	}))
+	r.Use(gin.Recovery())
 
 	// 自定义中间件
 	r.Use(Middleware())

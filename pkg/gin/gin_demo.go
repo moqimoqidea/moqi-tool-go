@@ -5,6 +5,8 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"io"
 	"log"
 	"net/http"
@@ -62,6 +64,23 @@ type StructD struct {
 		FieldX string `form:"field_x"`
 	}
 	FieldD string `form:"field_d"`
+}
+
+// Booking 包含绑定和验证的数据。
+type Booking struct {
+	CheckIn  time.Time `form:"check_in" binding:"required,bookabledate" time_format:"2006-01-02"`
+	CheckOut time.Time `form:"check_out" binding:"required,gtfield=CheckIn,bookabledate" time_format:"2006-01-02"`
+}
+
+var bookableDate validator.Func = func(fl validator.FieldLevel) bool {
+	date, ok := fl.Field().Interface().(time.Time)
+	if ok {
+		today := time.Now()
+		if today.After(date) {
+			return false
+		}
+	}
+	return true
 }
 
 func main() {
@@ -178,6 +197,12 @@ func main() {
 	r.GET("/getc", GetDataC)
 	r.GET("/getd", GetDataD)
 
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		_ = v.RegisterValidation("bookabledate", bookableDate)
+	}
+
+	r.GET("/bookable", getBookable)
+
 	// 自定义 HTTP 配置
 	s := &http.Server{
 		Addr:           ":8080",
@@ -187,6 +212,15 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 	_ = s.ListenAndServe()
+}
+
+func getBookable(c *gin.Context) {
+	var b Booking
+	if err := c.ShouldBindWith(&b, binding.Query); err == nil {
+		c.JSON(http.StatusOK, gin.H{"message": "Booking dates are valid!"})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
 }
 
 func Middleware() gin.HandlerFunc {

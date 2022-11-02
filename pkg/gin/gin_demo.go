@@ -24,6 +24,16 @@ var albums = []album{
 	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
 }
 
+type Login struct {
+	User     string `form:"user" json:"user" xml:"user"  binding:"required"`
+	Password string `form:"password" json:"password" xml:"password" binding:"required"`
+}
+
+type Person struct {
+	ID   string `uri:"id" binding:"required,uuid"`
+	Name string `uri:"name" binding:"required"`
+}
+
 func main() {
 	// 记录到文件。
 	f, _ := os.Create("gin.log")
@@ -55,6 +65,48 @@ func main() {
 		// /JSONP?callback=x
 		// 将输出：x({\"foo\":\"bar\"})
 		c.JSONP(http.StatusOK, data)
+	})
+
+	// 绑定 JSON ({"user": "manu", "password": "123"})
+	r.POST("/loginJSON", func(c *gin.Context) {
+		var json Login
+		if err := c.ShouldBindJSON(&json); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if json.User != "manu" || json.Password != "123" {
+			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"status": "you are logged in"})
+	})
+
+	// 绑定 HTML 表单 (user=manu&password=123)
+	r.POST("/loginForm", func(c *gin.Context) {
+		var form Login
+		// 根据 Content-Type Header 推断使用哪个绑定器。
+		if err := c.ShouldBind(&form); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if form.User != "manu" || form.Password != "123" {
+			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"status": "you are logged in"})
+	})
+
+	r.GET("/uri_bind/:name/:id", func(c *gin.Context) {
+		var person Person
+		if err := c.ShouldBindUri(&person); err != nil {
+			c.JSON(400, gin.H{"msg": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"name": person.Name, "uuid": person.ID})
 	})
 
 	_ = r.Run("localhost:8080")

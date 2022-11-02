@@ -27,7 +27,16 @@ func main() {
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbums)
+
+	// asciiJson
 	router.GET("/someJson", someJson)
+
+	router.LoadHTMLGlob("gin_templates/*")
+	router.GET("/index", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
 
 	_ = router.Run("localhost:8080")
 }

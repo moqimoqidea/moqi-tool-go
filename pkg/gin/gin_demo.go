@@ -5,8 +5,10 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"io"
+	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 // album represents data about a record album.
@@ -32,6 +34,12 @@ type Login struct {
 type Person struct {
 	ID   string `uri:"id" binding:"required,uuid"`
 	Name string `uri:"name" binding:"required"`
+}
+
+type Person1 struct {
+	Name     string    `form:"name"`
+	Address  string    `form:"address"`
+	Birthday time.Time `form:"birthday" time_format:"2006-01-02" time_utc:"1"`
 }
 
 func main() {
@@ -109,7 +117,29 @@ func main() {
 		c.JSON(200, gin.H{"name": person.Name, "uuid": person.ID})
 	})
 
+	// 绑定查询字符串或表单数据
+	r.GET("/bind_query", bindQueryOrPost)
+	r.POST("/bind_post", bindQueryOrPost)
+
 	_ = r.Run("localhost:8080")
+}
+
+func bindQueryOrPost(c *gin.Context) {
+	var person Person1
+	// 如果是 `GET` 请求，只使用 `Form` 绑定引擎（`query`）。
+	// 如果是 `POST` 请求，首先检查 `content-type` 是否为 `JSON` 或 `XML`，然后再使用 `Form`（`form-data`）。
+	// 查看更多：https://github.com/gin-gonic/gin/blob/master/binding/binding.go#L88
+	if c.ShouldBind(&person) == nil {
+		log.Println(person.Name)
+		log.Println(person.Address)
+		log.Println(person.Birthday)
+	}
+
+	c.JSON(200, gin.H{
+		"name":     person.Name,
+		"address":  person.Address,
+		"birthday": person.Birthday,
+	})
 }
 
 func someJson(c *gin.Context) {

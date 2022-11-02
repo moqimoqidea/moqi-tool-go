@@ -4,3 +4,6 @@
 
 # zap log files
 pkg/zap/*.log
+
+# gin log
+*.log

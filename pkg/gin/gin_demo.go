@@ -42,6 +42,27 @@ type Person1 struct {
 	Birthday time.Time `form:"birthday" time_format:"2006-01-02" time_utc:"1"`
 }
 
+type StructA struct {
+	FieldA string `form:"field_a"`
+}
+
+type StructB struct {
+	NestedStruct StructA
+	FieldB       string `form:"field_b"`
+}
+
+type StructC struct {
+	NestedStructPointer *StructA
+	FieldC              string `form:"field_c"`
+}
+
+type StructD struct {
+	NestedAnonyStruct struct {
+		FieldX string `form:"field_x"`
+	}
+	FieldD string `form:"field_d"`
+}
+
 func main() {
 	// 记录到文件。
 	f, _ := os.Create("gin.log")
@@ -51,6 +72,17 @@ func main() {
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
 	r := gin.Default()
+
+	// 自定义中间件
+	r.Use(Middleware())
+	r.GET("/user_define_middleware", func(c *gin.Context) {
+		example := c.MustGet("example").(string)
+
+		// 打印："12345"
+		log.Printf("example: %v", example)
+		c.JSON(http.StatusOK, example)
+	})
+
 	r.GET("/albums", getAlbums)
 	r.GET("/albums/:id", getAlbumByID)
 	r.POST("/albums", postAlbums)
@@ -121,7 +153,72 @@ func main() {
 	r.GET("/bind_query", bindQueryOrPost)
 	r.POST("/bind_post", bindQueryOrPost)
 
-	_ = r.Run("localhost:8080")
+	// 绑定表单数据至自定义结构体
+	r.GET("/getb", GetDataB)
+	r.GET("/getc", GetDataC)
+	r.GET("/getd", GetDataD)
+
+	// 自定义 HTTP 配置
+	s := &http.Server{
+		Addr:           ":8080",
+		Handler:        r,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+	_ = s.ListenAndServe()
+}
+
+func Middleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		t := time.Now()
+
+		// oldExampleValue: <nil>, 证明这里其实无法获取此值
+		oldExampleValue, _ := c.Get("example")
+		log.Printf("oldExampleValue: %v", oldExampleValue)
+
+		// 设置 example 变量
+		c.Set("example", "12345")
+
+		// 请求前
+
+		c.Next()
+
+		// 请求后
+		latency := time.Since(t)
+		log.Printf("latency: %v", latency)
+
+		// 获取发送的 status
+		status := c.Writer.Status()
+		log.Printf("status: %v", status)
+	}
+}
+
+func GetDataB(c *gin.Context) {
+	var b StructB
+	_ = c.Bind(&b)
+	c.JSON(200, gin.H{
+		"a": b.NestedStruct,
+		"b": b.FieldB,
+	})
+}
+
+func GetDataC(c *gin.Context) {
+	var b StructC
+	_ = c.Bind(&b)
+	c.JSON(200, gin.H{
+		"a": b.NestedStructPointer,
+		"c": b.FieldC,
+	})
+}
+
+func GetDataD(c *gin.Context) {
+	var b StructD
+	_ = c.Bind(&b)
+	c.JSON(200, gin.H{
+		"x": b.NestedAnonyStruct,
+		"d": b.FieldD,
+	})
 }
 
 func bindQueryOrPost(c *gin.Context) {
@@ -130,9 +227,9 @@ func bindQueryOrPost(c *gin.Context) {
 	// 如果是 `POST` 请求，首先检查 `content-type` 是否为 `JSON` 或 `XML`，然后再使用 `Form`（`form-data`）。
 	// 查看更多：https://github.com/gin-gonic/gin/blob/master/binding/binding.go#L88
 	if c.ShouldBind(&person) == nil {
-		log.Println(person.Name)
-		log.Println(person.Address)
-		log.Println(person.Birthday)
+		log.Printf("person.Name %v", person.Name)
+		log.Printf("person.Address %v", person.Address)
+		log.Printf("person.Birthday %v", person.Birthday)
 	}
 
 	c.JSON(200, gin.H{

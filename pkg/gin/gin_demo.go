@@ -23,22 +23,32 @@ var albums = []album{
 }
 
 func main() {
-	router := gin.Default()
-	router.GET("/albums", getAlbums)
-	router.GET("/albums/:id", getAlbumByID)
-	router.POST("/albums", postAlbums)
+	r := gin.Default()
+	r.GET("/albums", getAlbums)
+	r.GET("/albums/:id", getAlbumByID)
+	r.POST("/albums", postAlbums)
 
 	// asciiJson
-	router.GET("/someJson", someJson)
+	r.GET("/someJson", someJson)
 
-	router.LoadHTMLGlob("gin_templates/*")
-	router.GET("/index", func(c *gin.Context) {
+	r.LoadHTMLGlob("gin_templates/*")
+	r.GET("/index", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Main website",
 		})
 	})
 
-	_ = router.Run("localhost:8080")
+	r.GET("/JSONP", func(c *gin.Context) {
+		data := map[string]interface{}{
+			"foo": "bar",
+		}
+
+		// /JSONP?callback=x
+		// 将输出：x({\"foo\":\"bar\"})
+		c.JSONP(http.StatusOK, data)
+	})
+
+	_ = r.Run("localhost:8080")
 }
 
 func someJson(c *gin.Context) {

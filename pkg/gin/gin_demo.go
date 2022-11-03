@@ -134,12 +134,13 @@ func setupRouter() *gin.Engine {
 	// asciiJson
 	r.GET("/someJson", someJson)
 
+	// https://gin-gonic.com/zh-cn/docs/examples/html-rendering/
 	// r.LoadHTMLGlob("gin_templates/*")
-	r.GET("/index", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"title": "Main website",
-		})
-	})
+	//r.GET("/index", func(c *gin.Context) {
+	//	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+	//		"title": "Main website",
+	//	})
+	//})
 
 	r.GET("/JSONP", func(c *gin.Context) {
 		data := map[string]interface{}{

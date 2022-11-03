@@ -83,7 +83,7 @@ var bookableDate validator.Func = func(fl validator.FieldLevel) bool {
 	return true
 }
 
-func main() {
+func setupRouter() *gin.Engine {
 	// 记录到文件。
 	f, _ := os.Create("gin.log")
 	//gin.DefaultWriter = io.MultiWriter(f)
@@ -112,6 +112,11 @@ func main() {
 	}))
 	r.Use(gin.Recovery())
 
+	// for test
+	r.GET("/ping", func(c *gin.Context) {
+		c.String(200, "pong")
+	})
+
 	// 自定义中间件
 	r.Use(Middleware())
 	r.GET("/user_define_middleware", func(c *gin.Context) {
@@ -129,7 +134,7 @@ func main() {
 	// asciiJson
 	r.GET("/someJson", someJson)
 
-	r.LoadHTMLGlob("gin_templates/*")
+	// r.LoadHTMLGlob("gin_templates/*")
 	r.GET("/index", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Main website",
@@ -202,6 +207,12 @@ func main() {
 	}
 
 	r.GET("/bookable", getBookable)
+
+	return r
+}
+
+func main() {
+	r := setupRouter()
 
 	// 自定义 HTTP 配置
 	s := &http.Server{

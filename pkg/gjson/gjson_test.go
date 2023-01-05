@@ -30,6 +30,14 @@ const (
 				{"name": "Deloise", "age": 44}`
 )
 
+func TestGjson8(t *testing.T) {
+	fmt.Println(JsonStringToMap(json, "friends.#.first", "friends.#.age"))
+}
+
+func TestGjson7(t *testing.T) {
+	fmt.Println(gjson.GetMany(json, "friends.#.first", "friends.#.age"))
+}
+
 func TestGjson1(t *testing.T) {
 	value := gjson.Get(simpleJson, "name.last")
 	fmt.Println("value.String() -> ", value.String())

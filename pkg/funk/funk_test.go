@@ -379,6 +379,16 @@ func TestChunk(t *testing.T) {
 PASS
 */
 
+// 分组
+func TestChunkString(t *testing.T) {
+	dataArray := []string{"1", "2", "3", "4", "5"}
+	dataFlotArray := funk.ChunkStrings(dataArray, 2)
+
+	for _, innerDataArray := range dataFlotArray {
+		fmt.Println("innerDataArray:", innerDataArray)
+	}
+}
+
 // 结构体转成Map
 func TestToMap(t *testing.T) {
 	bookList := []Book{

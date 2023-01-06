@@ -66,6 +66,8 @@ func TestArrayList(t *testing.T) {
 	list.Insert(0, "a")                   // ["a","b"]
 
 	fmt.Println("list->", list.String())
+	jsonList, _ := list.ToJSON()
+	fmt.Println("jsonList->", string(jsonList))
 }
 
 func TestSinglylinkedlist(t *testing.T) {

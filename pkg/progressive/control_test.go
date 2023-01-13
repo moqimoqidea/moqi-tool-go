@@ -5,6 +5,22 @@ import (
 	"testing"
 )
 
+func TestSwitchCase(t *testing.T) {
+	switch x, y := 1, 2; x + y {
+	case 3:
+		a := 1
+		fmt.Println("case1: a = ", a)
+		fallthrough
+	case 10:
+		a := 5
+		fmt.Println("case2: a =", a)
+		fallthrough
+	default:
+		a := 7
+		fmt.Println("default case: a =", a)
+	}
+}
+
 func TestSelectCase(t *testing.T) {
 	c1 := make(chan int)
 	c2 := make(chan int, 1)

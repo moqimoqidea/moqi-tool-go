@@ -11,6 +11,12 @@ import (
 	"time"
 )
 
+func TestTime0(t *testing.T) {
+	currentTime := time.Now()
+	currentDate := currentTime.Format("2006-01-02")
+
+	fmt.Println(currentDate)
+}
 func TestTime(t *testing.T) {
 	currentTime := time.Now()
 

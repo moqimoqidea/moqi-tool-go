@@ -8,3 +8,5 @@ pkg/zap/*.log
 # gin log
 *.log
 
+.vscode
+

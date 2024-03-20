@@ -1,5 +1,6 @@
 package c
 
-type Welcomer interface {
+type Welcomed interface {
 	Hello() string
+	HelloInt() int
 }

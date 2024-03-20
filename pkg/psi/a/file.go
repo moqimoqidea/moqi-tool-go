@@ -17,6 +17,10 @@ func (mg MyGreeter) HelloWithParameter(a string) string {
 	return "Hello from package a with parameter: " + a
 }
 
+func (mg MyGreeter) Demo(a string) string {
+	return "Demo not in Greeter interface: " + a
+}
+
 func main() {
 	b.MethodHello()
 

@@ -21,6 +21,18 @@ type MyStruct struct {
 	Name string
 }
 
+type MySliceStruct struct {
+	Name string
+}
+
+type MyMapStruct struct {
+	Name string
+}
+
+type MyPointerStruct struct {
+	Name string
+}
+
 func (m MyStruct) FunctionHello() {
 	fmt.Println("FunctionHello from b function.")
 }

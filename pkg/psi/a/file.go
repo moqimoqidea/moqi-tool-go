@@ -27,11 +27,14 @@ func main() {
 	myStruct := b.MyStruct{Name: "moqi"}
 	myStruct.FunctionHello()
 
-	myStruct.FunctionHelloXXXYYYMMM()
+	slice1 := []b.MySliceStruct{{Name: "moqi"}}
+	fmt.Println(slice1)
 
-	mg := MyGreeter{}
-	greeting := b.Greet(mg) // 使用 b 包的 Greet 函数
-	fmt.Println(greeting)
-	greetingWithParameter := b.GreetWithParameter(mg, "moqi") // 使用 b 包的 GreetWithParameter 函数
-	fmt.Println(greetingWithParameter)
+	map1 := map[string]b.MyMapStruct{
+		"moqi": {Name: "moqi"},
+	}
+	fmt.Println(map1)
+
+	pointStruct := &b.MyPointerStruct{Name: string("moqi")}
+	fmt.Printf("%+v\n", pointStruct)
 }
